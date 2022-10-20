@@ -1,5 +1,5 @@
 $searchForRbac = @("Contributor", "Owner")
-$searchUserTypes = @("User") ##$searchUserTypes = @("Group","User", "ServicePrincipal")
+$searchUserTypes = @("User","Unknown") ##$searchUserTypes = @("Group","User", "ServicePrincipal","Unknown")
 
 $subNames = @("Subscription Name 1",
     "Subscription Name 2")
@@ -10,7 +10,7 @@ foreach ($subName in $subNames) {
     Write-Host "Scanning subscription : "  $subName
     Write-Host "------------------------------------------------------------------"
     $azlogs = @()
-    $azlogs  += @($(("Scope`tDisplayName`tRBAC`tUserType")))
+    $azlogs  += @($(("Scope`tDisplayName`tObjectId`tRBAC`tUserType")))
     $foundassigns = @()
 
     $Resources = Get-AzResource  
@@ -22,9 +22,9 @@ foreach ($subName in $subNames) {
         | Where-Object { $_.ObjectType -in $searchUserTypes } 
 
         foreach ($a in $assign) {
-            if ( $foundassigns -notcontains $($a.Scope + "`t" + $a.DisplayName + "`t" + $a.RoleDefinitionName + "`t" + $a.ObjectType)) {
-                $v = @($(("" + $a.Scope + "`t" + $a.DisplayName + "`t" + $a.RoleDefinitionName + "`t" + $a.ObjectType )))
-                $foundassigns += @($($a.Scope + "`t" + $a.DisplayName + "`t" + $a.RoleDefinitionName + "`t" + $a.ObjectType))
+            if ( $foundassigns -notcontains $($a.Scope + "`t" + $a.DisplayName + "`t" + $a.ObjectId + "`t" + $a.RoleDefinitionName + "`t" + $a.ObjectType)) {
+                $v = @($(("" + $a.Scope + "`t" + $a.DisplayName + "`t" + $a.ObjectId + "`t" + $a.RoleDefinitionName + "`t" + $a.ObjectType )))
+                $foundassigns += @($($a.Scope + "`t" + $a.DisplayName + "`t" + $a.ObjectId + "`t" + $a.RoleDefinitionName + "`t" + $a.ObjectType))
                 $azlogs += $v
                 Write-Host  $v
             }
@@ -35,4 +35,3 @@ foreach ($subName in $subNames) {
     $azlogs >> .\$azSubName.csv
     
 }
- 
