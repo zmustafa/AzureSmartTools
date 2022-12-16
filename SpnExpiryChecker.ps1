@@ -202,7 +202,7 @@ $emailBody = $Logs | Sort-Object -Property "Status" -Descending | ConvertTo-Html
 
 # logic-app-spn-alerts-to-email
 $logicApp = "XXXX URL"
-$emailsToNotify ="emailtonotify@integra"
+$emailsToNotify ="emailtonotify@domain"
 $bodyHtml = ConvertTo-Json  @{
     subject = "Alert: Summary of SPN Secret Keys and Certificates that are ACTIVE, EXPIRED, EXPIRING SOON." 
     email = $emailsToNotify
