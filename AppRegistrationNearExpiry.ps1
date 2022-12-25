@@ -1,3 +1,5 @@
+#Install-Module AzureAD -Scope CurrentUser -Force
+#Connect-AzureAD
 $expiresInDays = 30
 $exportPathCerts = "c:\Users\xxxx\Desktop\expiredCerts.csv"
 $exportPathSecrets = "c:\Users\xxxx\Desktop\expiredSecrets.csv"
