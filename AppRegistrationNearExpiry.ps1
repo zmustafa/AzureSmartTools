@@ -22,7 +22,7 @@ $CustomKeyIdentifier  = (Get-AzureADApplicationKeyCredential  -ObjectId  $_.Obje
         [PSCustomObject] @{
         App =  $app.DisplayName
         ObjectID =  $app.ObjectId
-        Owner = ($owner | Select-Object -ExpandProperty UserPrincipalName) -join ','
+        Owner = ($owner | Where-Object $.UserPrincipalName -ne null  |  Select-Object -ExpandProperty UserPrincipalName) -join ','
         AppId =  $app.AppId
         Type =  $_.GetType().name
         KeyIdentifier =  $id
@@ -47,7 +47,7 @@ $CustomKeyIdentifier  = (Get-AzureADApplicationPasswordCredential  -ObjectId  $_
         [PSCustomObject] @{
         App =  $app.DisplayName
         ObjectID =  $app.ObjectId
-        Owner = ($owner | Select-Object -ExpandProperty UserPrincipalName) -join ','
+        Owner = ($owner | Where-Object $.UserPrincipalName -ne null  |  Select-Object -ExpandProperty UserPrincipalName) -join ','
         AppId =  $app.AppId
         Type =  $_.GetType().name
         KeyIdentifier=  $_.KeyId
