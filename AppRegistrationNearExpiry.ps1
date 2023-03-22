@@ -5,6 +5,7 @@ $exportPathCerts = "c:\Users\xxxx\Desktop\expiredCerts.csv"
 $exportPathSecrets = "c:\Users\xxxx\Desktop\expiredSecrets.csv"
 $today = (Get-Date).ToUniversalTime()
 $futureDate = $today.AddDays($ExpiresInDays)
+$entApps = Get-AzureADServicePrincipal -All:$true | ? {$_.Tags -eq "WindowsAzureActiveDirectoryIntegratedApp"}
 
 $expired  =  Get-AzureADApplication  -All:$true  |  ForEach-Object {
 $app  =  $_
@@ -17,11 +18,13 @@ $CustomKeyIdentifier  = (Get-AzureADApplicationKeyCredential  -ObjectId  $_.Obje
     if($CustomKeyIdentifier) {
         $id  =  [System.Convert]::ToBase64String($CustomKeyIdentifier)
     }
-    $owner = Get-AzureADApplicationOwner -ObjectId $app.ObjectID
+        $owner = Get-AzureADApplicationOwner -ObjectId $app.ObjectID
     
+
         [PSCustomObject] @{
         App =  $app.DisplayName
         ObjectID =  $app.ObjectId
+        EntObjID = try{($entApps | ?{$_.AppId -eq $app.AppId})[0].ObjectId}catch{};
         Owner = ($owner | Where-Object $.UserPrincipalName -ne null  |  Select-Object -ExpandProperty UserPrincipalName) -join ','
         AppId =  $app.AppId
         Type =  $_.GetType().name
@@ -47,6 +50,7 @@ $CustomKeyIdentifier  = (Get-AzureADApplicationPasswordCredential  -ObjectId  $_
         [PSCustomObject] @{
         App =  $app.DisplayName
         ObjectID =  $app.ObjectId
+        EntObjID = try{($entApps | ?{$_.AppId -eq $app.AppId})[0].ObjectId}catch{};
         Owner = ($owner | Where-Object $.UserPrincipalName -ne null  |  Select-Object -ExpandProperty UserPrincipalName) -join ','
         AppId =  $app.AppId
         Type =  $_.GetType().name
@@ -55,5 +59,6 @@ $CustomKeyIdentifier  = (Get-AzureADApplicationPasswordCredential  -ObjectId  $_
         }
     }
 }
+
 
 $expired  | export-csv -Path $exportPathSecrets -NoTypeInformation 
