@@ -1,0 +1,57 @@
+{
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workbookDisplayName": {
+      "type": "string",
+      "defaultValue": "Used Space in Azure SQL and Azure Storage",
+      "metadata": {
+        "description": "The friendly name for the workbook that is used in the Gallery or Saved List.  This name must be unique within a resource group."
+      }
+    },
+    "workbookType": {
+      "type": "string",
+      "defaultValue": "workbook",
+      "metadata": {
+        "description": "The gallery that the workbook will been shown under. Supported values include workbook, tsg, etc. Usually, this is 'workbook'"
+      }
+    },
+    "workbookSourceId": {
+      "type": "string",
+      "defaultValue": "azure monitor",
+      "metadata": {
+        "description": "The id of resource instance to which the workbook will be associated"
+      }
+    },
+    "workbookId": {
+      "type": "string",
+      "defaultValue": "[newGuid()]",
+      "metadata": {
+        "description": "The unique guid for this workbook instance"
+      }
+    }
+  },
+  "resources": [
+    {
+      "name": "[parameters('workbookId')]",
+      "type": "microsoft.insights/workbooks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2022-04-01",
+      "dependsOn": [],
+      "kind": "shared",
+      "properties": {
+        "displayName": "[parameters('workbookDisplayName')]",
+        "serializedData": "{\"version\":\"Notebook/1.0\",\"items\":[{\"type\":1,\"content\":{\"json\":\"# Used space in Azure SQL and Azure Storage Accounts\\r\\n\"},\"name\":\"text - 2\"},{\"type\":9,\"content\":{\"version\":\"KqlParameterItem/1.0\",\"parameters\":[{\"id\":\"e282bcfd-676d-4ebe-9a0a-9d047904de22\",\"version\":\"KqlParameterItem/1.0\",\"name\":\"TimeRange\",\"label\":\"Time range\",\"type\":4,\"isRequired\":true,\"typeSettings\":{\"selectableValues\":[{\"durationMs\":86400000},{\"durationMs\":259200000},{\"durationMs\":1209600000}],\"allowCustom\":true},\"value\":{\"durationMs\":1209600000}},{\"id\":\"c517802a-74f7-469d-9158-41c5023905da\",\"version\":\"KqlParameterItem/1.0\",\"name\":\"Subscriptions\",\"type\":6,\"isRequired\":true,\"multiSelect\":true,\"quote\":\"'\",\"delimiter\":\",\",\"typeSettings\":{\"additionalResourceOptions\":[\"value::all\"],\"includeAll\":false,\"selectAllValue\":\"\",\"showDefault\":false},\"timeContext\":{\"durationMs\":0},\"timeContextFromParameter\":\"TimeRange\",\"value\":[\"value::all\"]},{\"id\":\"1f35dc4e-9186-4a36-96a5-2259dec75434\",\"version\":\"KqlParameterItem/1.0\",\"name\":\"Workspaces\",\"type\":5,\"isRequired\":true,\"multiSelect\":true,\"quote\":\"'\",\"delimiter\":\",\",\"query\":\"where type =~ 'microsoft.operationalinsights/workspaces'\\r\\n| where strcat('/subscriptions/',subscriptionId) in ({Subscriptions})\\r\\n| project id\",\"crossComponentResources\":[\"value::selected\"],\"value\":[\"value::all\"],\"typeSettings\":{\"additionalResourceOptions\":[\"value::all\"],\"showDefault\":false},\"timeContext\":{\"durationMs\":0},\"timeContextFromParameter\":\"TimeRange\",\"queryType\":1,\"resourceType\":\"microsoft.resourcegraph/resources\"},{\"id\":\"332be9fd-33ad-407e-843e-5f2c49a50b6a\",\"version\":\"KqlParameterItem/1.0\",\"name\":\"Servers\",\"type\":5,\"isRequired\":true,\"multiSelect\":true,\"quote\":\"\\\"\",\"delimiter\":\",\",\"query\":\"where type == \\\"microsoft.sql/servers\\\"\\r\\n| where strcat('/subscriptions/',subscriptionId) in ({Subscriptions})\\r\\n| project id=tolower(id)\",\"crossComponentResources\":[\"value::selected\"],\"value\":[\"value::all\"],\"typeSettings\":{\"additionalResourceOptions\":[\"value::all\"],\"selectAllValue\":\"\",\"showDefault\":false},\"timeContext\":{\"durationMs\":0},\"timeContextFromParameter\":\"TimeRange\",\"queryType\":1,\"resourceType\":\"microsoft.resourcegraph/resources\"},{\"id\":\"b4cc825f-166b-4929-916a-21b8073748c2\",\"version\":\"KqlParameterItem/1.0\",\"name\":\"Databases\",\"type\":5,\"isRequired\":true,\"multiSelect\":true,\"quote\":\"'\",\"delimiter\":\",\",\"query\":\"where type == \\\"microsoft.sql/servers/databases\\\"\\r\\n| where strcat('/subscriptions/',subscriptionId) in ({Subscriptions})\\r\\n| project id=tolower(id)\\r\\n| extend serverName = split(id,'/databases/')[0]\\r\\n| where serverName in ({Servers})\\r\\n| project id\",\"crossComponentResources\":[\"value::selected\"],\"value\":[\"value::all\"],\"typeSettings\":{\"additionalResourceOptions\":[\"value::all\"],\"selectAllValue\":\"\",\"showDefault\":false},\"timeContext\":{\"durationMs\":0},\"timeContextFromParameter\":\"TimeRange\",\"queryType\":1,\"resourceType\":\"microsoft.resourcegraph/resources\"},{\"id\":\"d2a7c94c-d04b-4b1c-94b0-063c284c8ebe\",\"version\":\"KqlParameterItem/1.0\",\"name\":\"StorageAcounts\",\"label\":\"Storage accounts\",\"type\":5,\"multiSelect\":true,\"quote\":\"'\",\"delimiter\":\",\",\"query\":\"where type =~ 'microsoft.storage/storageaccounts'\\r\\n| order by name asc\\r\\n| extend Rank = row_number()\\r\\n| project value = id, label = id, selected = Rank <= 5\",\"crossComponentResources\":[\"value::selected\"],\"typeSettings\":{\"additionalResourceOptions\":[\"value::all\"],\"showDefault\":false},\"queryType\":1,\"resourceType\":\"microsoft.resourcegraph/resources\",\"value\":[\"value::all\"]}],\"style\":\"pills\",\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\"},\"name\":\"parameters - 1\"},{\"type\":1,\"content\":{\"json\":\"# Azure SQL Databases\"},\"name\":\"text - 4\"},{\"type\":10,\"content\":{\"chartId\":\"338f0ed6-5373-49c4-afe8-e5519b690b0b\",\"version\":\"MetricsItem/2.0\",\"size\":0,\"chartType\":0,\"resourceType\":\"microsoft.sql/servers/databases\",\"metricScope\":0,\"resourceParameter\":\"Databases\",\"resourceIds\":[\"{Databases}\"],\"timeContext\":{\"durationMs\":86400000},\"metrics\":[{\"namespace\":\"microsoft.sql/servers/databases\",\"metric\":\"microsoft.sql/servers/databases-Basic-storage\",\"aggregation\":3}],\"gridSettings\":{\"formatters\":[{\"columnMatch\":\"Subscription\",\"formatter\":5},{\"columnMatch\":\"Name\",\"formatter\":13,\"formatOptions\":{\"linkTarget\":\"Resource\",\"showIcon\":true}},{\"columnMatch\":\"microsoft.sql/servers/databases-Basic-storage\",\"formatter\":1},{\"columnMatch\":\"microsoft.sql/servers/databases-Basic-storage Timeline\",\"formatter\":5}],\"rowLimit\":10000,\"labelSettings\":[{\"columnId\":\"Subscription\",\"label\":\"Subscription\"},{\"columnId\":\"microsoft.sql/servers/databases-Basic-storage\",\"label\":\"Data space used (Max)\"},{\"columnId\":\"microsoft.sql/servers/databases-Basic-storage Timeline\",\"label\":\"Data space used Timeline\"}]}},\"name\":\"metric - 10\"},{\"type\":1,\"content\":{\"json\":\"# Azure Storage Accounts\"},\"name\":\"text - 5\"},{\"type\":10,\"content\":{\"chartId\":\"workbook93f2c921-9a97-4ab8-bf4e-c64173d7fd48\",\"version\":\"MetricsItem/2.0\",\"size\":0,\"chartType\":0,\"resourceType\":\"microsoft.storage/storageaccounts\",\"metricScope\":0,\"resourceParameter\":\"StorageAcounts\",\"resourceIds\":[\"{StorageAcounts}\"],\"timeContextFromParameter\":\"TimeRange\",\"timeContext\":{\"durationMs\":1209600000},\"metrics\":[{\"namespace\":\"microsoft.storage/storageaccounts\",\"metric\":\"microsoft.storage/storageaccounts-Capacity-UsedCapacity\",\"aggregation\":4}],\"resourceLimit\":5000,\"gridSettings\":{\"formatters\":[{\"columnMatch\":\"Name\",\"formatter\":13,\"formatOptions\":{\"linkTarget\":\"Resource\",\"showIcon\":true}},{\"columnMatch\":\"microsoft.storage/storageaccounts-Capacity-UsedCapacity\",\"formatter\":1},{\"columnMatch\":\"microsoft.storage/storageaccounts-Capacity-UsedCapacity Timeline\",\"formatter\":5},{\"columnMatch\":\"Subscription\",\"formatter\":5}],\"rowLimit\":10000,\"labelSettings\":[{\"columnId\":\"Subscription\",\"label\":\"Subscription\"},{\"columnId\":\"microsoft.storage/storageaccounts-Capacity-UsedCapacity\",\"label\":\"Used capacity (Average)\"},{\"columnId\":\"microsoft.storage/storageaccounts-Capacity-UsedCapacity Timeline\",\"label\":\"Used capacity Timeline\"}]}},\"name\":\"metric - 11\"}],\"isLocked\":false,\"fallbackResourceIds\":[\"azure monitor\"]}",
+        "version": "1.0",
+        "sourceId": "[parameters('workbookSourceId')]",
+        "category": "[parameters('workbookType')]"
+      }
+    }
+  ],
+  "outputs": {
+    "workbookId": {
+      "type": "string",
+      "value": "[resourceId( 'microsoft.insights/workbooks', parameters('workbookId'))]"
+    }
+  },
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
+}
